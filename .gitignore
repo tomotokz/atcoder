@@ -1,0 +1,5 @@
+.vscode
+.tmp
+.DS_Store
+tests
+.env

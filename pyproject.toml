@@ -1,0 +1,10 @@
+[tool.ruff]
+line-length = 88
+select = ["E", "F"]
+ignore = [
+    "E741"
+]
+target-version = "py310"
+
+[tool.ruff.pydocstyle]
+convention = "google"
