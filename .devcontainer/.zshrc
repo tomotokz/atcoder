@@ -21,7 +21,9 @@ export LANG=ja_JP.UTF-8
 
 
 # Python
-alias py='python'
+alias pypy='/usr/local/bin/pypy3'
+alias cpy="/usr/local/bin/python3.11"
+alias py="pypy"
 
 # atcoder
 # vscode
@@ -30,6 +32,7 @@ alias vs='code -r main.py'
 for d in {a..g}; do
   alias $d="cd ../$d ; vs"
 done
+
 alias test='oj test -c "python main.py" -d ./tests/ -N -D'
 alias contest="source init_contest.sh"
 alias practice="source init_practice.sh"

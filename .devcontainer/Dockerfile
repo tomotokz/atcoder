@@ -1,7 +1,6 @@
 FROM pypy:3.10-7.3.12
 
-# 必要なパッケージを一括インストール
-RUN apt update && \
+RUN apt update &&  \
     apt-get install -y --no-install-recommends \
     zsh time tzdata tree git curl wget bzip2 gcc g++ gfortran \
     libopenblas-dev libatlas-base-dev liblapack-dev pkg-config \
@@ -9,18 +8,27 @@ RUN apt update && \
     software-properties-common apt-transport-https ruby-full \
     build-essential gdb lcov libbz2-dev libffi-dev libgdbm-dev \
     libgdbm-compat-dev liblzma-dev libncurses5-dev libreadline6-dev \
-    libsqlite3-dev libssl-dev lzma lzma-dev tk-dev uuid-dev zlib1g-dev \
-    expect && \
-    rm -rf /var/lib/apt/lists/*
+    libsqlite3-dev libssl-dev uuid-dev zlib1g-dev libgmp-dev \
+    libmpfr-dev libmpc-dev lzma lzma-dev expect \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
 
-# 設定ファイルのコピー
-COPY ./requirements.txt ./.zshrc /tmp/
+WORKDIR /opt
+RUN wget https://www.python.org/ftp/python/3.11.4/Python-3.11.4.tgz && \
+    tar -xvf Python-3.11.4.tgz && \
+    cd Python-3.11.4 && \
+    ./configure --enable-optimizations && \
+    make -j$(nproc) && \
+    make install && \
+    cd .. && rm -rf Python-3.11.4 Python-3.11.4.tgz
 
-# Pythonパッケージのインストール
-RUN pip install --upgrade pip setuptools wheel && \
-    pip install -r /tmp/requirements.txt
+COPY ./requirements_cpy.txt ./requirements_pypy.txt ./.zshrc /tmp/
 
-# AtCoder CLIのインストールと設定
+RUN pypy3 -m pip install --upgrade pip setuptools wheel && \
+    pypy3 -m pip install -r /tmp/requirements_pypy.txt && \
+    python3.11 -m pip install --upgrade pip setuptools wheel && \
+    python3.11 -m pip install -r /tmp/requirements_cpy.txt
+
 RUN npm install -g atcoder-cli && \
     acc config default-task-choice all && \
     mkdir -p $(acc config-dir)/py && \
@@ -29,12 +37,10 @@ RUN npm install -g atcoder-cli && \
     acc config default-template py && \
     acc templates
 
-# スクリプトファイルを配置し、実行権限を付与
 COPY ./login.sh ./init_contest.sh ./init_practice.sh ./submit.sh ./submit_safe.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/*.sh
 
-# zinitのインストール
-RUN zsh -c "$(curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)"
 
-# .zshrcの内容をユーザーの.zshrcに追加
-RUN cat /tmp/.zshrc >> $HOME/.zshrc
+# TODO: dotfileはGitHubから撮ってくるようにする
+RUN zsh -c "$(curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)" && \
+    cat /tmp/.zshrc >> $HOME/.zshrc
