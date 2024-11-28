@@ -41,6 +41,6 @@ COPY ./login.sh ./init_contest.sh ./init_practice.sh ./submit.sh ./submit_safe.s
 RUN chmod +x /usr/local/bin/*.sh
 
 
-# TODO: dotfileはGitHubから撮ってくるようにする
+# TODO: dotfileはGitHubから取ってくるようにする
 RUN zsh -c "$(curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)" && \
     cat /tmp/.zshrc >> $HOME/.zshrc
