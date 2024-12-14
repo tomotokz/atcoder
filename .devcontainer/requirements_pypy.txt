@@ -1,4 +1,7 @@
 online-judge-tools
+online-judge-template-generator
+yapf
+
 jupyter
 
 numpy==1.24.1

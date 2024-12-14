@@ -33,7 +33,10 @@ for d in {a..g}; do
   alias $d="cd ../$d ; vs"
 done
 
-alias test='oj test -c "python main.py" -d ./tests/ -N -D'
+alias test_pypy='oj test -c "pypy main.py" -d ./tests/ -N -D'
+alias test_cpy='oj test -c "cpy main.py" -d ./tests/ -N -D'
+alias t="test_pypy"
+alias test="test_pypy"
 alias contest="source init_contest.sh"
 alias practice="source init_practice.sh"
 alias sd='source submit.sh'
